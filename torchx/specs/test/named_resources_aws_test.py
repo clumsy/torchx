@@ -23,6 +23,7 @@ from torchx.specs.named_resources_aws import (
     aws_g5_4xlarge,
     aws_g5_8xlarge,
     aws_g5_xlarge,
+    aws_g6e_48xlarge,
     aws_m5_2xlarge,
     aws_p3_16xlarge,
     aws_p3_2xlarge,
@@ -86,6 +87,14 @@ class NamedResourcesTest(unittest.TestCase):
         self.assertEqual(8, p5.gpu)
         self.assertEqual(2048 * GiB, p5.memMB)
         self.assertEqual({EFA_DEVICE: 32}, p5.devices)
+
+    def test_aws_g6e(self) -> None:
+        g6e_48 = aws_g6e_48xlarge()
+
+        self.assertEqual(192, g6e_48.cpu)
+        self.assertEqual(8, g6e_48.gpu)
+        self.assertEqual(1536 * GiB, g6e_48.memMB)
+        self.assertEqual({EFA_DEVICE: 4}, g6e_48.devices)
 
     def test_aws_g4dn(self) -> None:
         g4d = aws_g4dn_xlarge()

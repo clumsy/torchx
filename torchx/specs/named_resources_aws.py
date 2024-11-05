@@ -253,6 +253,15 @@ def aws_g5_48xlarge() -> Resource:
         devices={EFA_DEVICE: 1},
     )
 
+def aws_g6e_48xlarge() -> Resource:
+    return Resource(
+        cpu=192,
+        gpu=8,
+        memMB=1536 * GiB,
+        capabilities={K8S_ITYPE: "g6e.48xlarge"},
+        devices={EFA_DEVICE: 4},
+    )
+
 
 def aws_trn1_2xlarge() -> Resource:
     return Resource(
@@ -299,6 +308,7 @@ NAMED_RESOURCES: Mapping[str, Callable[[], Resource]] = {
     "aws_g5.12xlarge": aws_g5_12xlarge,
     "aws_g5.24xlarge": aws_g5_24xlarge,
     "aws_g5.48xlarge": aws_g5_48xlarge,
+    "aws_g6e.48xlarge": aws_g6e_48xlarge,
     "aws_trn1.2xlarge": aws_trn1_2xlarge,
     "aws_trn1.32xlarge": aws_trn1_32xlarge,
 }

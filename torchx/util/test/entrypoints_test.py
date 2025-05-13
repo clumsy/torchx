@@ -80,7 +80,6 @@ _METADATA_EPS: str = "torchx.util.entrypoints.metadata.entry_points"
 class EntryPointsTest(unittest.TestCase):
     @patch(_METADATA_EPS, return_value=_ENTRY_POINTS)
     def test_load(self, _: MagicMock) -> None:
-        print(type(load("entrypoints.test", "foo")))
         self.assertEqual("foobar", load("entrypoints.test", "foo")())
 
         with self.assertRaisesRegex(KeyError, "baz"):
@@ -126,6 +125,14 @@ class EntryPointsTest(unittest.TestCase):
             "ep.grp.test.missing", {"foo": barbaz, "bar": foobar}, skip_defaults=True
         )
         self.assertIsNone(eps)
+
+    @patch(_METADATA_EPS, return_value=_ENTRY_POINTS)
+    def test_load_group_with_prefix(self, _: MagicMock) -> None:
+        eps = load_group("grp.test")
+        assert eps
+        self.assertEqual(2, len(eps))
+        self.assertEqual("foobar", eps["ep.foo"]())
+        self.assertEqual("barbaz", eps["ep.bar"]())
 
     @patch(_METADATA_EPS, return_value=_ENTRY_POINTS)
     def test_load_group_missing(self, _: MagicMock) -> None:

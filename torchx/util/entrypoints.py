@@ -59,6 +59,8 @@ def load_group(
     where the ``deferred_load_fn`` (as the name implies) defers the
     loading of the entrypoint (e.g. ``entrypoint.load()``) until the
     caller explicitly executes the funtion.
+    If there are entry points with the group matching exactly they are the only ones returned.
+    Otherwise all entry points that have a group ending with ``group`` are returned with a prefix.
 
     For the following ``entry_point.txt``:
 
@@ -87,14 +89,23 @@ def load_group(
 
     """
 
-    entrypoints = metadata.entry_points().select(group=group)
+    entrypoints_prefixed, entrypoints_override = [], []
+    for ep in metadata.entry_points():
+        if ep.group == group:
+            entrypoints_override.append(ep)
+        elif ep.group.endswith(group):
+            entrypoints_prefixed.append(ep)
 
+    entrypoints = entrypoints_override or entrypoints_prefixed
     if len(entrypoints) == 0:
         if skip_defaults:
             return None
         return default
 
-    eps = {}
+    eps: Dict[str, Any] = {}
+    if not skip_defaults and default:
+        eps.update(default)
     for ep in entrypoints:
-        eps[ep.name] = _defer_load_ep(ep)
+        prefix = ep.group.replace(group, "")
+        eps[prefix + ep.name] = _defer_load_ep(ep)
     return eps
